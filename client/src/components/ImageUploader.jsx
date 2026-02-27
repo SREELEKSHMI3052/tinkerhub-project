@@ -1,74 +1,44 @@
 import React, { useState } from 'react';
+import { Camera, CheckCircle } from 'lucide-react';
+import { theme } from '../theme';
 
 export default function ImageUploader({ onUploadSuccess }) {
   const [preview, setPreview] = useState('');
 
-  const handleFileChange = (e) => {
+  const handleImg = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    
     reader.onload = (event) => {
-      // Create an image object to read dimensions
       const img = new Image();
       img.src = event.target.result;
-      
       img.onload = () => {
-        // Create an invisible canvas to resize the image
+        // Compress the image to ensure it easily transmits to the DB
         const canvas = document.createElement('canvas');
         const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 800;
-        let width = img.width;
-        let height = img.height;
-
-        // Calculate new dimensions while keeping aspect ratio
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-
-        // Draw the resized image onto the canvas
-        canvas.width = width;
-        canvas.height = height;
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-
-        // Convert back to a highly compressed JPEG string (70% quality)
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
         const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-        setPreview(compressedBase64); // Show preview
-        onUploadSuccess(compressedBase64); // Send tiny string to backend
+        setPreview(compressedBase64);
+        onUploadSuccess(compressedBase64);
       };
     };
   };
 
   return (
-    <div style={{ margin: '10px 0', padding: '10px', background: '#fff', borderRadius: '8px', border: '1px solid #ddd' }}>
-      <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#333' }}>
-        📸 Upload Photo Proof:
+    <div style={{ marginBottom: '15px' }}>
+      <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: preview ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.05)', border: preview ? `1px solid ${theme.success}` : theme.border, borderRadius: '12px', color: preview ? theme.success : '#fff', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold', transition: 'all 0.3s' }}>
+        {preview ? <CheckCircle size={18} /> : <Camera size={18} color={theme.primary} />}
+        {preview ? 'Photo Attached Successfully' : 'Upload Photo Proof'}
+        <input type="file" accept="image/*" onChange={handleImg} style={{ display: 'none' }} />
       </label>
-      <input 
-        type="file" 
-        accept="image/*" 
-        onChange={handleFileChange} 
-        style={{ width: '100%', cursor: 'pointer' }} 
-      />
-      {preview && (
-        <img 
-          src={preview} 
-          alt="Preview" 
-          style={{ marginTop: '15px', maxHeight: '120px', borderRadius: '8px', display: 'block', border: '1px solid #eee' }} 
-        />
-      )}
+      {preview && <img src={preview} alt="Preview" style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '10px', marginTop: '10px', border: theme.border }} />}
     </div>
   );
 }

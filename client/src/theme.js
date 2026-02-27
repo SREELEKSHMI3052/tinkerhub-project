@@ -8,5 +8,20 @@ export const theme = {
   success: '#10b981',
   danger: '#f43f5e',
   warning: '#fbbf24',
-  shadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+  shadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+  
+  // Uniform Logout Button Styling
+  logoutBtn: {
+    background: 'rgba(244, 63, 94, 0.1)',
+    border: '1px solid #f43f5e',
+    color: '#f43f5e',
+    padding: '10px 20px',
+    borderRadius: '12px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.2s ease-in-out'
+  }
 };
