@@ -4,6 +4,13 @@ import { theme } from '../theme';
 
 export default function ImageUploader({ onUploadSuccess }) {
   const [preview, setPreview] = useState('');
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleImg = (e) => {
     const file = e.target.files[0];
@@ -33,12 +40,12 @@ export default function ImageUploader({ onUploadSuccess }) {
 
   return (
     <div style={{ marginBottom: '15px' }}>
-      <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: preview ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.05)', border: preview ? `1px solid ${theme.success}` : theme.border, borderRadius: '12px', color: preview ? theme.success : '#fff', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold', transition: 'all 0.3s' }}>
-        {preview ? <CheckCircle size={18} /> : <Camera size={18} color={theme.primary} />}
+      <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: isMobile ? '6px' : '8px', padding: isMobile ? '10px' : '12px', background: preview ? 'rgba(16, 185, 129, 0.1)' : 'rgba(255,255,255,0.05)', border: preview ? `1px solid ${theme.success}` : theme.border, borderRadius: '12px', color: preview ? theme.success : '#fff', cursor: 'pointer', fontSize: isMobile ? '0.8rem' : '0.9rem', fontWeight: 'bold', transition: 'all 0.3s', flexWrap: 'wrap' }}>
+        {preview ? <CheckCircle size={isMobile ? 16 : 18} /> : <Camera size={isMobile ? 16 : 18} color={theme.primary} />}
         {preview ? 'Photo Attached Successfully' : 'Upload Photo Proof'}
         <input type="file" accept="image/*" onChange={handleImg} style={{ display: 'none' }} />
       </label>
-      {preview && <img src={preview} alt="Preview" style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '10px', marginTop: '10px', border: theme.border }} />}
+      {preview && <img src={preview} alt="Preview" style={{ width: '100%', height: isMobile ? '100px' : '120px', objectFit: 'cover', borderRadius: '10px', marginTop: '10px', border: theme.border }} />}
     </div>
   );
 }
