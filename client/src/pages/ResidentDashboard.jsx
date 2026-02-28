@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, History, Star, Activity, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../theme';
+import { API_BASE_URL } from '../api/ApiConfig';
 import ImageUploader from '../components/ImageUploader';
 import Geolocation from '../components/Geolocation';
 
@@ -29,7 +30,7 @@ export default function ResidentDashboard({ user, setUser, setRole }) {
 
   useEffect(() => {
     const fetchHistory = async () => {
-      const res = await axios.get(`http://localhost:3000/api/tickets?residentName=${user.name}`);
+      const res = await axios.get(`${API_BASE_URL}/api/tickets?residentName=${user.name}`);
       setMyTickets(res.data);
     };
     if (user?.name) fetchHistory();
@@ -38,7 +39,7 @@ export default function ResidentDashboard({ user, setUser, setRole }) {
   const submitReport = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:3000/api/tickets', { 
+      const res = await axios.post(`${API_BASE_URL}/api/tickets`, { 
         residentName: user.name, residentAge: Number(age), description: desc, image: media, location: locationCoords 
       });
       setMyTickets([res.data, ...myTickets]);
@@ -52,7 +53,7 @@ export default function ResidentDashboard({ user, setUser, setRole }) {
     const rating = e.target.rating.value;
     const feedback = e.target.feedback.value;
     try {
-      const res = await axios.put(`http://localhost:3000/api/tickets/${id}/feedback`, { rating, feedback });
+      const res = await axios.put(`${API_BASE_URL}/api/tickets/${id}/feedback`, { rating, feedback });
       setMyTickets(myTickets.map(t => t._id === id ? res.data : t));
     } catch (err) { alert("Feedback failed"); }
   };

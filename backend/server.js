@@ -8,12 +8,29 @@ import Ticket from './models/Ticket.js';
 
 dotenv.config();
 const app = express();
-app.use(cors());
+
+// Dynamic CORS configuration - works for both local and deployed setups
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// Health check endpoint for monitoring
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date(), message: 'Server is running' });
+});
+
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+const io = new Server(server, { 
+  cors: corsOptions,
+  transports: ['websocket', 'polling']
+});
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log('✅ DB Connected!'));
 

@@ -5,8 +5,9 @@ import { Wrench, CheckCircle, LogOut, User, Navigation } from 'lucide-react';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../theme';
+import { API_BASE_URL, SOCKET_URL } from '../api/ApiConfig';
 
-const socket = io('http://localhost:3000');
+const socket = io(SOCKET_URL);
 
 export default function TechnicianDashboard({ setUser, setRole }) {
   const [tickets, setTickets] = useState([]);
@@ -21,7 +22,7 @@ export default function TechnicianDashboard({ setUser, setRole }) {
 
   useEffect(() => {
     const fetch = async () => {
-      const res = await axios.get('http://localhost:3000/api/tickets');
+      const res = await axios.get(`${API_BASE_URL}/api/tickets`);
       setTickets(res.data);
     };
     fetch();
@@ -32,7 +33,7 @@ export default function TechnicianDashboard({ setUser, setRole }) {
 
   const resolveJob = async (id) => {
     try {
-      await axios.put(`http://localhost:3000/api/tickets/${id}/status`, { status: 'Resolved' });
+      await axios.put(`${API_BASE_URL}/api/tickets/${id}/status`, { status: 'Resolved' });
       alert("Job Completed successfully!");
     } catch (err) { alert("Status update failed"); }
   };

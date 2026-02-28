@@ -5,8 +5,9 @@ import { LayoutDashboard, LogOut, AlertCircle, User, Star, MessageSquare } from 
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../theme';
+import { API_BASE_URL, SOCKET_URL } from '../api/ApiConfig';
 
-const socket = io('http://localhost:3000');
+const socket = io(SOCKET_URL);
 
 export default function AdminDashboard({ setUser, setRole }) {
   const [tickets, setTickets] = useState([]);
@@ -21,7 +22,7 @@ export default function AdminDashboard({ setUser, setRole }) {
 
   useEffect(() => {
     const fetch = async () => {
-      const res = await axios.get('http://localhost:3000/api/tickets');
+      const res = await axios.get(`${API_BASE_URL}/api/tickets`);
       setTickets(res.data);
     };
     fetch();
